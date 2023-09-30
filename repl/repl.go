@@ -2,11 +2,11 @@ package repl
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 
-	"github.com/abhinav-0401/rosso/lexer"
-	"github.com/abhinav-0401/rosso/token"
+	"github.com/abhinav-0401/rosso/parser"
 )
 
 const PROMPT = ">> "
@@ -22,10 +22,10 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line := scanner.Text()
-		l := lexer.New(line)
+		parser := parser.New()
+		program := parser.ProduceAst(line)
 
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Fprintf(out, "%+v\n", tok)
-		}
+		programPretty, _ := json.Marshal(program)
+		fmt.Printf("%+v", string(programPretty))
 	}
 }

@@ -94,6 +94,15 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
+func (l *Lexer) Tokenise() []token.Token {
+	var tokens []token.Token
+	for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
+		tokens = append(tokens, tok)
+	}
+	tokens = append(tokens, token.Token{Type: token.EOF, Literal: ""})
+	return tokens
+}
+
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
