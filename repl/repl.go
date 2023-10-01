@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/abhinav-0401/rosso/eval"
 	"github.com/abhinav-0401/rosso/parser"
 )
 
@@ -24,8 +25,12 @@ func Start(in io.Reader, out io.Writer) {
 		line := scanner.Text()
 		parser := parser.New()
 		program := parser.ProduceAst(line)
+		value := eval.Eval(program)
 
-		programPretty, _ := json.MarshalIndent(program, "", "    ")
-		fmt.Printf("%+v\n", string(programPretty))
+		// programPretty, _ := json.MarshalIndent(program, "", "    ")
+		valuePretty, _ := json.MarshalIndent(value, "", "    ")
+
+		// fmt.Printf("%+v\n", string(programPretty))
+		fmt.Printf("%+v\n", string(valuePretty))
 	}
 }
