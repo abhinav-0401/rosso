@@ -25,7 +25,7 @@ func Start(in io.Reader, out io.Writer) {
 		parser := parser.New()
 		program := parser.ProduceAst(line)
 
-		programPretty, _ := json.Marshal(program)
-		fmt.Printf("%+v", string(programPretty))
+		programPretty, _ := json.MarshalIndent(program, "", "    ")
+		fmt.Printf("%+v\n", string(programPretty))
 	}
 }

@@ -19,6 +19,32 @@ func New() *Parser {
 	return &Parser{}
 }
 
+func (p *Parser) parseAdditiveExpr() ast.Expr {
+	var left = p.parseMultiplicativeExpr()
+
+	for p.at().Type == token.PLUS || p.at().Type == token.MINUS {
+		var operator = p.eat()
+		var right = p.parseMultiplicativeExpr()
+		var binaryExpr = &ast.BinaryExpr{Kind: ast.BinaryExprNode, Left: left, Right: right, Operator: operator}
+		left = binaryExpr
+	}
+
+	return left
+}
+
+func (p *Parser) parseMultiplicativeExpr() ast.Expr {
+	var left = p.parsePrimaryExpr()
+
+	for p.at().Type == token.ASTERISK || p.at().Type == token.SLASH {
+		var operator = p.eat()
+		var right = p.parsePrimaryExpr()
+		var binaryExpr = &ast.BinaryExpr{Kind: ast.BinaryExprNode, Left: left, Right: right, Operator: operator}
+		left = binaryExpr
+	}
+
+	return left
+}
+
 func (p *Parser) parsePrimaryExpr() ast.Expr {
 	var tok = p.at()
 	var expr ast.Expr
@@ -29,7 +55,11 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 	case token.INT:
 		numLit, _ := strconv.Atoi(p.eat().Literal)
 		return &ast.NumLit{Kind: ast.NumLitNode, Value: numLit}
-	// case token.
+	case token.LPAREN:
+		p.eat()
+		expr := p.parseExpr()
+		p.eat()
+		return expr
 	default:
 		fmt.Print("eof?")
 		os.Exit(1)
@@ -39,7 +69,7 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 }
 
 func (p *Parser) parseExpr() ast.Expr {
-	return p.parsePrimaryExpr()
+	return p.parseAdditiveExpr()
 }
 
 func (p *Parser) parseStmt() ast.Stmt {
