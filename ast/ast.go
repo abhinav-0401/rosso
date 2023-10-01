@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"github.com/abhinav-0401/rosso/token"
+)
+
 type NodeType string
 
 const (
@@ -29,9 +33,9 @@ func (p *Program) StmtKind() NodeType {
 
 type BinaryExpr struct {
 	Kind     NodeType
-	Left     *Expr
-	Right    *Expr
-	Operator string
+	Left     Expr
+	Right    Expr
+	Operator token.Token
 }
 
 func (be *BinaryExpr) StmtKind() NodeType {
