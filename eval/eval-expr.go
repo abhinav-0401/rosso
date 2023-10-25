@@ -33,3 +33,8 @@ func evalIdent(ident *ast.Ident, env *env.Env) object.Object {
 	// look up the value of the var by name and return it, scope auto resolved in eval.go
 	return env.LookupVar(ident.Symbol)
 }
+
+func evalVarAssign(expr *ast.VarAssign, env *env.Env) object.Object {
+	var value = Eval(expr.Value, env)
+	return env.AssignVar(expr.Symbol, value)
+}

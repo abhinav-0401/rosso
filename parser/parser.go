@@ -52,7 +52,7 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 
 	switch tok.Type {
 	case token.IDENT:
-		return &ast.Ident{Kind: ast.IdentNode, Symbol: p.eat().Literal}
+		return p.parseIdent()
 	case token.INT:
 		numLit, _ := strconv.Atoi(p.eat().Literal)
 		return &ast.NumLit{Kind: ast.NumLitNode, Value: numLit}
@@ -67,6 +67,17 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 	}
 
 	return expr
+}
+
+func (p *Parser) parseIdent() ast.Expr {
+	var ident token.Token = p.eat()
+	if p.at().Type == token.ASSIGN {
+		p.eat()
+		var expr = p.parseExpr()
+		p.expect(token.SEMICOLON, "")
+		return &ast.VarAssign{Kind: ast.VarAssignNode, Symbol: ident.Literal, Value: expr}
+	}
+	return &ast.Ident{Kind: ast.IdentNode, Symbol: ident.Literal}
 }
 
 func (p *Parser) parseExpr() ast.Expr {

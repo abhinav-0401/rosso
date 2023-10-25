@@ -12,6 +12,7 @@ const (
 	IdentNode      = "Identifier"
 	BinaryExprNode = "BinaryExpr"
 	VarDeclNode    = "VarDeclNode"
+	VarAssignNode  = "VarAssignNode"
 )
 
 type Stmt interface {
@@ -41,7 +42,7 @@ type VarDecl struct {
 }
 
 func (vd *VarDecl) StmtKind() NodeType {
-	return vd.Kind
+	return VarDeclNode
 }
 
 // -----------------------------------------------
@@ -84,4 +85,18 @@ func (nl *NumLit) StmtKind() NodeType {
 }
 func (nl *NumLit) ExprKind() NodeType {
 	return NumLitNode
+}
+
+type VarAssign struct {
+	Kind   NodeType
+	Symbol string
+	Value  Expr
+}
+
+func (va *VarAssign) StmtKind() NodeType {
+	return VarAssignNode
+}
+
+func (va *VarAssign) ExprKind() NodeType {
+	return VarAssignNode
 }

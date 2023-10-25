@@ -22,6 +22,8 @@ func Eval(astNode ast.Stmt, env *env.Env) object.Object {
 		return evalBinaryExpr(node, env)
 	case *ast.VarDecl:
 		return evalVarDecl(node, env)
+	case *ast.VarAssign:
+		return evalVarAssign(node, env)
 	default:
 		fmt.Printf("This AST Node has not yet been set up for evaluation\n")
 		os.Exit(1)

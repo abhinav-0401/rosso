@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/abhinav-0401/rosso/eval"
 	"io"
+
+	"github.com/abhinav-0401/rosso/eval"
 
 	"github.com/abhinav-0401/rosso/env"
 	"github.com/abhinav-0401/rosso/object"
@@ -30,12 +31,11 @@ func Start(in io.Reader, out io.Writer) {
 		line := scanner.Text()
 		parse := parser.New()
 		program := parse.ProduceAst(line)
-		value := eval.Eval(program, e)
-
 		programPretty, _ := json.MarshalIndent(program, "", "    ")
-		valuePretty, _ := json.MarshalIndent(value, "", "    ")
-
 		fmt.Printf("%+v\n", string(programPretty))
+
+		value := eval.Eval(program, e)
+		valuePretty, _ := json.MarshalIndent(value, "", "    ")
 		fmt.Printf("%+v\n", string(valuePretty))
 	}
 }
