@@ -22,3 +22,12 @@ As it currently stands, let statements in Rosso are of the form:
 let y = 10;
 let foobar = add(5, 6);
 ```
+
+A VarDecl struct really only needs four things - 
+1. The symbol of the identifier that is being declared
+  - A question might arise - why not store an `*ast.Ident` type? 
+  - okay so what is happening is, when parsing the tokens into an AST, the parser encounters this statement, and so 
+    it start parsing this into a node. How will this node looks like?
+  - VarDecl node -> Kind: VarDeclNode
+                 -> IsConstant: bool
+                 ->   

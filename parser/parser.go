@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -61,7 +62,7 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 		p.eat()
 		return expr
 	default:
-		fmt.Print("eof?")
+		fmt.Print("eof? ")
 		os.Exit(1)
 	}
 
@@ -72,8 +73,35 @@ func (p *Parser) parseExpr() ast.Expr {
 	return p.parseAdditiveExpr()
 }
 
+func (p *Parser) parseVarDeclStmt() ast.Stmt {
+	var qualifier token.Token = p.eat()
+	var isConst bool
+	if qualifier.Type == token.CONST {
+		isConst = true
+	}
+
+	var symbol token.Token = p.expect(token.IDENT, "")
+	if p.at().Type != token.SEMICOLON {
+		p.expect(token.ASSIGN, "") // don't need the "=" either
+		var expr = p.parseExpr()
+		p.expect(token.SEMICOLON, "")
+		return &ast.VarDecl{Kind: ast.VarDeclNode, IsConstant: isConst, Symbol: symbol.Literal, Value: expr}
+	} else {
+		if isConst {
+			log.Fatal("Error: constants must be assigned a value when being declared")
+		}
+		p.expect(token.SEMICOLON, "") // eat the semicolon
+		return &ast.VarDecl{Kind: ast.VarDeclNode, IsConstant: isConst, Symbol: symbol.Literal, Value: nil}
+	}
+}
+
 func (p *Parser) parseStmt() ast.Stmt {
-	return p.parseExpr()
+	switch p.at().Type {
+	case token.LET, token.CONST:
+		return p.parseVarDeclStmt()
+	default:
+		return p.parseExpr()
+	}
 }
 
 func (p *Parser) ProduceAst(src string) *ast.Program {
@@ -81,8 +109,8 @@ func (p *Parser) ProduceAst(src string) *ast.Program {
 		Kind: ast.ProgramNode,
 	}
 
-	lexer := lexer.New(src)
-	p.Tokens = lexer.Tokenise()
+	lex := lexer.New(src)
+	p.Tokens = lex.Tokenise()
 	fmt.Printf("tokens in the parser: %v\n", p.Tokens)
 
 	// parse until you hit the EOF token
@@ -105,4 +133,15 @@ func (p *Parser) eat() token.Token {
 	prev := p.Tokens[p.current]
 	p.current++
 	return prev
+}
+
+func (p *Parser) expect(tokenType token.TokenType, msg string) token.Token {
+	if p.at().Type != tokenType {
+		if msg == "" {
+			msg = fmt.Sprintf("Error: expected token %v, found %v\n", tokenType, p.at().Literal)
+		}
+		fmt.Printf(msg)
+		os.Exit(1)
+	}
+	return p.eat()
 }

@@ -11,6 +11,7 @@ const (
 	NumLitNode     = "NumericLiteral"
 	IdentNode      = "Identifier"
 	BinaryExprNode = "BinaryExpr"
+	VarDeclNode    = "VarDeclNode"
 )
 
 type Stmt interface {
@@ -19,7 +20,7 @@ type Stmt interface {
 
 type Expr interface {
 	Stmt
-	ExprKind() NodeType // method literally only exists to distinguis this type from Stmt
+	ExprKind() NodeType // method literally only exists to distinguish this type from Stmt
 }
 
 type Program struct {
@@ -29,7 +30,23 @@ type Program struct {
 
 func (p *Program) StmtKind() NodeType {
 	return ProgramNode
+
 }
+
+type VarDecl struct {
+	Kind       NodeType
+	IsConstant bool
+	Symbol     string
+	Value      Expr
+}
+
+func (vd *VarDecl) StmtKind() NodeType {
+	return vd.Kind
+}
+
+// -----------------------------------------------
+//	STATEMENTS ABOVE, EXPRESSIONS BELOW
+// -----------------------------------------------
 
 type BinaryExpr struct {
 	Kind     NodeType
