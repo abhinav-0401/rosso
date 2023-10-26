@@ -14,5 +14,5 @@ func (nlo *NumLitObject) Type() ObjectType {
 }
 
 func (nlo *NumLitObject) Debug() {
-	fmt.Printf(" {Kind: Integer, Value: %v} ", nlo.Value)
+	fmt.Printf(" {Kind: Integer, Value: %v}]\n", nlo.Value)
 }

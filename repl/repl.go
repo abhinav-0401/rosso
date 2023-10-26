@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/abhinav-0401/rosso/eval"
 	"io"
+
+	"github.com/abhinav-0401/rosso/eval"
 
 	"github.com/abhinav-0401/rosso/env"
 	"github.com/abhinav-0401/rosso/object"
@@ -17,8 +18,10 @@ const PROMPT = ">> "
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	var e = env.New(nil)
-	e.DeclareVar("x", &object.NumLitObject{Kind: object.INT, Value: 4}, false)
-	e.AssignVar("x", &object.NumLitObject{Kind: object.INT, Value: 10})
+	e.DeclareVar("PI", &object.NumLitObject{Kind: object.Int, Value: 4}, true)
+	e.DeclareVar("true", &object.BoolLitObject{Kind: object.Bool, Value: true}, true)
+	e.DeclareVar("false", &object.BoolLitObject{Kind: object.Bool, Value: false}, true)
+	e.DeclareVar("nil", &object.NilLitObject{Kind: object.Nil, Value: "nil"}, true)
 
 	for {
 		fmt.Fprintf(out, PROMPT)

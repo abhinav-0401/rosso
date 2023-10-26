@@ -12,21 +12,29 @@ func evalBinaryExpr(binaryExpr *ast.BinaryExpr, env *env.Env) object.Object {
 	var rhs = Eval(binaryExpr.Right, env)
 	var operator = binaryExpr.Operator
 
-	if lhs.Type() == object.INT && rhs.Type() == object.INT {
+	if lhs.Type() == object.Int && rhs.Type() == object.Int {
 		l := lhs.(*object.NumLitObject)
 		r := rhs.(*object.NumLitObject)
 		switch operator.Type {
 		case token.PLUS:
-			return &object.NumLitObject{Kind: object.INT, Value: l.Value + r.Value}
+			return &object.NumLitObject{Kind: object.Int, Value: l.Value + r.Value}
 		case token.MINUS:
-			return &object.NumLitObject{Kind: object.INT, Value: l.Value - r.Value}
+			return &object.NumLitObject{Kind: object.Int, Value: l.Value - r.Value}
 		case token.ASTERISK:
-			return &object.NumLitObject{Kind: object.INT, Value: l.Value * r.Value}
+			return &object.NumLitObject{Kind: object.Int, Value: l.Value * r.Value}
 		case token.SLASH:
-			return &object.NumLitObject{Kind: object.INT, Value: l.Value / r.Value}
+			return &object.NumLitObject{Kind: object.Int, Value: l.Value / r.Value}
+		case token.GT:
+			return &object.BoolLitObject{Kind: object.Bool, Value: l.Value > r.Value}
+		case token.LT:
+			return &object.BoolLitObject{Kind: object.Bool, Value: l.Value < r.Value}
+		case token.EQ:
+			return &object.BoolLitObject{Kind: object.Bool, Value: l.Value == r.Value}
+		case token.NOT_EQ:
+			return &object.BoolLitObject{Kind: object.Bool, Value: l.Value != r.Value}
 		}
 	}
-	return &object.NumLitObject{Kind: object.INT, Value: 0}
+	return env.LookupVar("nil")
 }
 
 func evalIdent(ident *ast.Ident, env *env.Env) object.Object {

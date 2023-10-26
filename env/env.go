@@ -21,7 +21,7 @@ func New(parentEnv *Env) *Env {
 func (e *Env) DeclareVar(name string, value object.Object, isConst bool) object.Object {
 	// we want to check if the var has already been declared
 	if _, ok := e.Vars[name]; ok {
-		fmt.Printf("Cannot declare %v as the variable already exists in scope", name)
+		fmt.Printf("Error: cannot declare %v as the variable already exists in scope\n", name)
 		os.Exit(1)
 	}
 
@@ -40,7 +40,7 @@ func (e *Env) AssignVar(name string, value object.Object) object.Object {
 
 	// if it is a constant, throw an error
 	if e.Consts[name] {
-		log.Fatal("Error: cannot assign to a constant")
+		log.Fatal("Error: cannot assign to a constant\n")
 	}
 	env.Vars[name] = value
 
@@ -59,7 +59,7 @@ func (e *Env) resolve(name string) *Env {
 	}
 
 	if e.Parent == nil {
-		fmt.Printf("Cannot assign variable %v as it does not exist", name)
+		fmt.Printf("Error: cannot assign variable %v as it does not exist", name)
 		os.Exit(1)
 	}
 

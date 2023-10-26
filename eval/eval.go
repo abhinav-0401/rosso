@@ -13,7 +13,7 @@ func Eval(astNode ast.Stmt, env *env.Env) object.Object {
 	var obj object.Object
 	switch node := astNode.(type) {
 	case *ast.NumLit:
-		return &object.NumLitObject{Kind: object.INT, Value: node.Value}
+		return &object.NumLitObject{Kind: object.Int, Value: node.Value}
 	case *ast.Program:
 		return evalProgram(node, env)
 	case *ast.Ident:
@@ -22,6 +22,10 @@ func Eval(astNode ast.Stmt, env *env.Env) object.Object {
 		return evalBinaryExpr(node, env)
 	case *ast.VarDecl:
 		return evalVarDecl(node, env)
+	case *ast.ExprStmt:
+		return evalExprStmt(node, env)
+	case *ast.PrintStmt:
+		return evalPrintStmt(node, env)
 	default:
 		fmt.Printf("This AST Node has not yet been set up for evaluation\n")
 		os.Exit(1)
