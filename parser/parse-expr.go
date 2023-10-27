@@ -70,6 +70,8 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 		return p.parseLoopExpr()
 	case token.LBRACE:
 		return p.parseBlockExpr()
+	case token.PROC:
+		return p.parseProcExpr()
 	default:
 		fmt.Print("eof? ")
 		os.Exit(1)
@@ -80,6 +82,10 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 
 func (p *Parser) parseExpr() ast.Expr {
 	return p.parseComparisonExpr()
+}
+
+func (p *Parser) parseIdentExpr() *ast.Ident {
+	return &ast.Ident{Kind: ast.IdentNode, Symbol: p.eat().Literal}
 }
 
 func (p *Parser) parseIfExpr() ast.Expr {
@@ -123,6 +129,29 @@ func (p *Parser) parseBlockExpr() *ast.BlockStmt {
 	}
 	p.eat() // }
 	return &ast.BlockStmt{Kind: ast.BlockExprNode, Body: body}
+}
+
+func (p *Parser) parseProcExpr() *ast.ProcLitExpr {
+	p.eat()
+	p.expect(token.LPAREN, "")
+	var params = p.parseParams()
+	p.expect(token.RPAREN, "")
+	var body = p.parseBlockExpr()
+	return &ast.ProcLitExpr{Kind: ast.ProcLitExprNode, Params: params, Body: body}
+}
+
+func (p *Parser) parseParams() []*ast.Ident {
+	var params = []*ast.Ident{}
+	if p.at().Type == token.RPAREN {
+		return params
+	}
+	params = append(params, p.parseIdentExpr())
+
+	for p.at().Type == token.COMMA {
+		p.eat()
+		params = append(params, p.parseIdentExpr())
+	}
+	return params
 }
 
 // helper to parseBlockExpr()

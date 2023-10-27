@@ -7,18 +7,19 @@ import (
 type NodeType string
 
 const (
-	ProgramNode    = "Program"
-	NumLitNode     = "NumericLiteral"
-	IdentNode      = "Identifier"
-	BinaryExprNode = "BinaryExpr"
-	VarDeclNode    = "VarDeclNode"
-	IfExprNode     = "IfExprNode"
-	ExprStmtNode   = "ExprStmtNode"
-	PrintStmtNode  = "PrintStmtNode"
-	BlockStmtNode  = "BlockStmtNode"
-	BlockExprNode  = "BlockExprNode"
-	LoopExprNode   = "LoopExprNode"
-	BreakStmtNode  = "BreakStmtNode"
+	ProgramNode     = "Program"
+	NumLitNode      = "NumericLiteral"
+	IdentNode       = "IdentNode"
+	BinaryExprNode  = "BinaryExprNode"
+	VarDeclNode     = "VarDeclNode"
+	IfExprNode      = "IfExprNode"
+	ExprStmtNode    = "ExprStmtNode"
+	PrintStmtNode   = "PrintStmtNode"
+	BlockStmtNode   = "BlockStmtNode"
+	BlockExprNode   = "BlockExprNode"
+	LoopExprNode    = "LoopExprNode"
+	BreakStmtNode   = "BreakStmtNode"
+	ProcLitExprNode = "ProcLitExprNode"
 )
 
 type Stmt interface {
@@ -178,3 +179,23 @@ func (le *LoopExpr) StmtKind() NodeType {
 func (le *LoopExpr) ExprKind() NodeType {
 	return LoopExprNode
 }
+
+type ProcLitExpr struct {
+	Kind   NodeType
+	Params []*Ident
+	Body   *BlockStmt
+}
+
+func (ple *ProcLitExpr) StmtKind() NodeType {
+	return LoopExprNode
+}
+
+func (ple *ProcLitExpr) ExprKind() NodeType {
+	return LoopExprNode
+}
+
+// type CallExpr struct {
+// 	Kind NodeType
+// 	Proc ProcExpr // Either an Ident or a ProcLitExpr, since both can be called
+
+// }
