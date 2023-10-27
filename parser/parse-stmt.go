@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/abhinav-0401/rosso/ast"
@@ -29,10 +30,17 @@ func (p *Parser) parseVarDeclStmt() ast.Stmt {
 	}
 }
 
-func (p *Parser) parseExprStmt() ast.Stmt {
+func (p *Parser) parseExprStmt(expectSemicolon bool) ast.Stmt {
 	var expr = p.parseExpr()
+	var exprStmt = &ast.ExprStmt{Kind: ast.ExprStmtNode, Node: expr}
+	if (!expectSemicolon) && (p.at().Type == token.RBRACE) { // BlockExpr, last Expr can be an Expr
+		return expr
+	}
+	if (expr.ExprKind() == ast.IfExprNode) || (expr.ExprKind() == ast.LoopExprNode) || (expr.ExprKind() == ast.BlockExprNode) {
+		return exprStmt
+	}
 	p.expect(token.SEMICOLON, "")
-	return &ast.ExprStmt{Kind: ast.ExprStmtNode, Node: expr}
+	return exprStmt
 }
 
 func (p *Parser) parsePrintStmt() ast.Stmt {
@@ -42,12 +50,39 @@ func (p *Parser) parsePrintStmt() ast.Stmt {
 	return &ast.PrintStmt{Kind: ast.PrintStmtNode, Value: value}
 }
 
+func (p *Parser) parseBreakStmt() ast.Stmt {
+	p.eat()
+	fmt.Println(p.at())
+	if p.at().Type == token.SEMICOLON {
+		p.eat()
+		return &ast.BreakStmt{Kind: ast.BreakStmtNode, Value: nil}
+	}
+	var value = p.parseExpr()
+	p.expect(token.SEMICOLON, "")
+	return &ast.BreakStmt{Kind: ast.BreakStmtNode, Value: value}
+}
+
 func (p *Parser) parseStmt() ast.Stmt {
 	switch p.at().Type {
 	case token.LET, token.CONST:
 		return p.parseVarDeclStmt()
 	case token.PRINT:
 		return p.parsePrintStmt()
+	case token.BREAK:
+		return p.parseBreakStmt()
+	default:
+		return p.parseExprStmt(true)
+	}
+}
+
+func (p *Parser) parseStmtInBlock() ast.Stmt {
+	switch p.at().Type {
+	case token.LET, token.CONST:
+		return p.parseVarDeclStmt()
+	case token.PRINT:
+		return p.parsePrintStmt()
+	case token.LBRACE:
+		return p.parseBlockExpr()
 	default:
 		return p.parseExpr()
 	}

@@ -21,7 +21,7 @@ func Start(in io.Reader, out io.Writer) {
 	e.DeclareVar("PI", &object.NumLitObject{Kind: object.Int, Value: 4}, true)
 	e.DeclareVar("true", &object.BoolLitObject{Kind: object.Bool, Value: true}, true)
 	e.DeclareVar("false", &object.BoolLitObject{Kind: object.Bool, Value: false}, true)
-	e.DeclareVar("nil", &object.NilLitObject{Kind: object.Nil, Value: "nil"}, true)
+	e.DeclareVar("nil", &object.NilLitObject{Kind: object.Nil, Value: nil}, true)
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -33,12 +33,11 @@ func Start(in io.Reader, out io.Writer) {
 		line := scanner.Text()
 		parse := parser.New()
 		program := parse.ProduceAst(line)
-		value := eval.Eval(program, e)
-
 		programPretty, _ := json.MarshalIndent(program, "", "    ")
-		valuePretty, _ := json.MarshalIndent(value, "", "    ")
-
 		fmt.Printf("%+v\n", string(programPretty))
+
+		value := eval.Eval(program, e)
+		valuePretty, _ := json.MarshalIndent(value, "", "    ")
 		fmt.Printf("%+v\n", string(valuePretty))
 	}
 }

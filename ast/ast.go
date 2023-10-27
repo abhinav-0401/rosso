@@ -15,6 +15,10 @@ const (
 	IfExprNode     = "IfExprNode"
 	ExprStmtNode   = "ExprStmtNode"
 	PrintStmtNode  = "PrintStmtNode"
+	BlockStmtNode  = "BlockStmtNode"
+	BlockExprNode  = "BlockExprNode"
+	LoopExprNode   = "LoopExprNode"
+	BreakStmtNode  = "BreakStmtNode"
 )
 
 type Stmt interface {
@@ -24,6 +28,11 @@ type Stmt interface {
 type Expr interface {
 	Stmt
 	ExprKind() NodeType // method literally only exists to distinguish this type from Stmt
+}
+
+type ConditionalStmt interface {
+	Stmt
+	ConditionalKind() NodeType
 }
 
 type Program struct {
@@ -36,6 +45,28 @@ func (p *Program) StmtKind() NodeType {
 
 }
 
+type BlockStmt struct {
+	Kind   NodeType
+	Body   []Stmt
+	Last   Expr
+	IsLoop bool
+	// Value  Expr
+}
+
+func (bs *BlockStmt) StmtKind() NodeType {
+	return BlockExprNode
+
+}
+
+func (bs *BlockStmt) ExprKind() NodeType { // this makes the struct an Expr
+	return BlockExprNode
+}
+
+func (bs *BlockStmt) ConditionalKind() NodeType {
+	return BlockExprNode
+
+}
+
 type VarDecl struct {
 	Kind       NodeType
 	IsConstant bool
@@ -45,6 +76,15 @@ type VarDecl struct {
 
 func (vd *VarDecl) StmtKind() NodeType {
 	return vd.Kind
+}
+
+type BreakStmt struct {
+	Kind  NodeType
+	Value Expr
+}
+
+func (bs *BreakStmt) StmtKind() NodeType {
+	return BreakStmtNode
 }
 
 type ExprStmt struct {
@@ -109,8 +149,8 @@ func (nl *NumLit) ExprKind() NodeType {
 
 type IfExpr struct {
 	Kind       NodeType
-	ThenBranch []Stmt
-	ElseBranch Stmt
+	ThenBranch *BlockStmt
+	ElseBranch ConditionalStmt
 	Condition  Expr
 }
 
@@ -120,4 +160,21 @@ func (ie *IfExpr) StmtKind() NodeType {
 
 func (ie *IfExpr) ExprKind() NodeType {
 	return IfExprNode
+}
+
+func (ie *IfExpr) ConditionalKind() NodeType {
+	return IfExprNode
+}
+
+type LoopExpr struct {
+	Kind NodeType
+	Body *BlockStmt
+}
+
+func (le *LoopExpr) StmtKind() NodeType {
+	return LoopExprNode
+}
+
+func (le *LoopExpr) ExprKind() NodeType {
+	return LoopExprNode
 }

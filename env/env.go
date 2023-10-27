@@ -59,7 +59,7 @@ func (e *Env) resolve(name string) *Env {
 	}
 
 	if e.Parent == nil {
-		fmt.Printf("Error: cannot assign variable %v as it does not exist", name)
+		fmt.Printf("Error: variable %v does not exist\n", name)
 		os.Exit(1)
 	}
 

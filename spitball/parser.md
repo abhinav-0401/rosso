@@ -31,3 +31,7 @@ A VarDecl struct really only needs four things -
   - VarDecl node -> Kind: VarDeclNode
                  -> IsConstant: bool
                  ->   
+
+## Thinking about Types
+
+- A Rosso Program`(*ast.Program)` is a sequence of either `Stmt`s or `ExprStmt`s, or `BlockExprStmt`s.

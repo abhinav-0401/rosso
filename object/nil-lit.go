@@ -6,7 +6,7 @@ import (
 
 type NilLitObject struct {
 	Kind  ObjectType
-	Value string // hack to represent the null type for now
+	Value interface{} // hack to represent the null type for now
 }
 
 func (nlo *NilLitObject) Type() ObjectType {
