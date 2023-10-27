@@ -20,6 +20,7 @@ const (
 	LoopExprNode    = "LoopExprNode"
 	BreakStmtNode   = "BreakStmtNode"
 	ProcLitExprNode = "ProcLitExprNode"
+	CallExprNode    = "CallExprNode"
 )
 
 type Stmt interface {
@@ -34,6 +35,12 @@ type Expr interface {
 type ConditionalStmt interface {
 	Stmt
 	ConditionalKind() NodeType
+}
+
+type ProcExpr interface {
+	Stmt
+	Expr
+	ProcExprKind() NodeType
 }
 
 type Program struct {
@@ -136,6 +143,10 @@ func (i *Ident) ExprKind() NodeType {
 	return IdentNode
 }
 
+func (i *Ident) ProcExprKind() NodeType {
+	return IdentNode
+}
+
 type NumLit struct {
 	Kind  NodeType
 	Value int
@@ -187,15 +198,27 @@ type ProcLitExpr struct {
 }
 
 func (ple *ProcLitExpr) StmtKind() NodeType {
-	return LoopExprNode
+	return ProcLitExprNode
 }
 
 func (ple *ProcLitExpr) ExprKind() NodeType {
-	return LoopExprNode
+	return ProcLitExprNode
 }
 
-// type CallExpr struct {
-// 	Kind NodeType
-// 	Proc ProcExpr // Either an Ident or a ProcLitExpr, since both can be called
+func (ple *ProcLitExpr) ProcExprKind() NodeType {
+	return ProcLitExprNode
+}
 
-// }
+type CallExpr struct {
+	Kind   NodeType
+	Proc   ProcExpr // Either an Ident or a ProcLitExpr, since both can be called
+	Params []*Ident
+}
+
+func (ce *CallExpr) StmtKind() NodeType {
+	return CallExprNode
+}
+
+func (ce *CallExpr) ExprKind() NodeType {
+	return CallExprNode
+}

@@ -55,7 +55,7 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 
 	switch tok.Type {
 	case token.IDENT:
-		return &ast.Ident{Kind: ast.IdentNode, Symbol: p.eat().Literal}
+		return p.parseIdentExpr()
 	case token.INT:
 		numLit, _ := strconv.Atoi(p.eat().Literal)
 		return &ast.NumLit{Kind: ast.NumLitNode, Value: numLit}
@@ -71,7 +71,12 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 	case token.LBRACE:
 		return p.parseBlockExpr()
 	case token.PROC:
-		return p.parseProcExpr()
+		// this could either be just a proc literal or a proc IIFE
+		var procExpr = p.parseProcExpr()
+		if p.at().Type == token.LPAREN { // CallExpr
+			return p.parseCallExpr(procExpr)
+		}
+		return procExpr
 	default:
 		fmt.Print("eof? ")
 		os.Exit(1)
@@ -84,8 +89,17 @@ func (p *Parser) parseExpr() ast.Expr {
 	return p.parseComparisonExpr()
 }
 
-func (p *Parser) parseIdentExpr() *ast.Ident {
-	return &ast.Ident{Kind: ast.IdentNode, Symbol: p.eat().Literal}
+func (p *Parser) parseIdentExpr() ast.Expr {
+	// this could also just either be an ident, an assignment or a proc call
+	var symbolToken = p.eat()
+	var ident = &ast.Ident{Kind: ast.IdentNode, Symbol: symbolToken.Literal}
+	switch p.at().Type {
+	case token.LPAREN: // CallExpr
+		return p.parseCallExpr(ident)
+	case token.ASSIGN:
+		log.Fatal("Error: AST node for assignment not set up for parsing yet")
+	}
+	return ident
 }
 
 func (p *Parser) parseIfExpr() ast.Expr {
@@ -140,18 +154,29 @@ func (p *Parser) parseProcExpr() *ast.ProcLitExpr {
 	return &ast.ProcLitExpr{Kind: ast.ProcLitExprNode, Params: params, Body: body}
 }
 
+func (p *Parser) parseCallExpr(procExpr ast.ProcExpr) *ast.CallExpr {
+	p.eat() // (
+	var params = p.parseParams()
+	p.expect(token.RPAREN, "")
+	return &ast.CallExpr{Kind: ast.CallExprNode, Proc: procExpr, Params: params}
+}
+
 func (p *Parser) parseParams() []*ast.Ident {
 	var params = []*ast.Ident{}
 	if p.at().Type == token.RPAREN {
 		return params
 	}
-	params = append(params, p.parseIdentExpr())
+	params = append(params, p.parseIdent())
 
 	for p.at().Type == token.COMMA {
 		p.eat()
-		params = append(params, p.parseIdentExpr())
+		params = append(params, p.parseIdent())
 	}
 	return params
+}
+
+func (p *Parser) parseIdent() *ast.Ident {
+	return &ast.Ident{Kind: ast.IdentNode, Symbol: p.eat().Literal}
 }
 
 // helper to parseBlockExpr()
