@@ -77,6 +77,31 @@ func evalLoopExpr(loop *ast.LoopExpr, e *env.Env) object.Object {
 	return loopValue
 }
 
+func evalCallExpr(call *ast.CallExpr, e *env.Env) object.Object {
+	// evaluate the args first
+	var argValues = evalArgs(call.Args, e)
+	var procLit = Eval(call.Proc, e).(*object.ProcLitObject)
+
+	// define a new env, with the parent being set to the env in which the literal was defined (closure)
+	var newEnv = &env.Env{Parent: procLit.Env.(*env.Env), Vars: make(map[string]object.Object), Consts: make(map[string]bool)}
+	for i, param := range procLit.Params {
+		newEnv.DeclareVar(param.Symbol, argValues[i], false)
+	}
+
+	// now execute
+	var procValue = evalProcBlockStmt(procLit.Body, newEnv).Value
+	return procValue
+}
+
+func evalArgs(args []ast.Expr, e *env.Env) []object.Object {
+	var argValues = []object.Object{}
+	for _, expr := range args {
+		argValues = append(argValues, Eval(expr, e))
+	}
+	return argValues
+}
+
+// again, BlockStmt is actually an Expr hehe
 func evalBlockStmt(block *ast.BlockStmt, e *env.Env) object.Object {
 	var lastEvaluated object.Object = e.LookupVar("nil")
 	newEnv := &env.Env{Parent: e, Vars: make(map[string]object.Object), Consts: make(map[string]bool)}
@@ -111,4 +136,21 @@ func evalLoopBlockStmt(block *ast.BlockStmt, e *env.Env) *object.BreakLitObject 
 			}
 		}
 	}
+}
+
+func evalProcBlockStmt(block *ast.BlockStmt, newEnv *env.Env) *object.ReturnLitObject {
+	var lastEvaluated object.Object = newEnv.LookupVar("nil")
+
+	for _, stmt := range block.Body {
+		if stmt.StmtKind() == ast.ReturnStmtNode {
+			returnStmt, _ := stmt.(*ast.ReturnStmt)
+			return evalReturnStmt(returnStmt, newEnv)
+		}
+		lastEvaluated = Eval(stmt, newEnv)
+		if lastEvaluated.Type() == object.Return {
+			r := lastEvaluated.(*object.ReturnLitObject)
+			return r
+		}
+	}
+	return &object.ReturnLitObject{Kind: object.Return, Value: lastEvaluated}
 }

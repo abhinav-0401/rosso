@@ -29,7 +29,7 @@ func (p *Parser) ProduceAst(src string) *ast.Program {
 
 	// parse until you hit the EOF token
 	for p.notEof() {
-		program.Body = append(program.Body, p.parseStmt())
+		program.Body = append(program.Body, p.parseStmt(true))
 	}
 
 	return program

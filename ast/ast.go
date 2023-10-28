@@ -7,20 +7,21 @@ import (
 type NodeType string
 
 const (
-	ProgramNode     = "Program"
-	NumLitNode      = "NumericLiteral"
-	IdentNode       = "IdentNode"
-	BinaryExprNode  = "BinaryExprNode"
-	VarDeclNode     = "VarDeclNode"
-	IfExprNode      = "IfExprNode"
-	ExprStmtNode    = "ExprStmtNode"
-	PrintStmtNode   = "PrintStmtNode"
-	BlockStmtNode   = "BlockStmtNode"
-	BlockExprNode   = "BlockExprNode"
-	LoopExprNode    = "LoopExprNode"
-	BreakStmtNode   = "BreakStmtNode"
-	ProcLitExprNode = "ProcLitExprNode"
-	CallExprNode    = "CallExprNode"
+	ProgramNode    = "Program"
+	NumLitNode     = "NumericLiteral"
+	IdentNode      = "IdentNode"
+	BinaryExprNode = "BinaryExprNode"
+	VarDeclNode    = "VarDeclNode"
+	IfExprNode     = "IfExprNode"
+	ExprStmtNode   = "ExprStmtNode"
+	PrintStmtNode  = "PrintStmtNode"
+	BlockStmtNode  = "BlockStmtNode"
+	BlockExprNode  = "BlockExprNode"
+	LoopExprNode   = "LoopExprNode"
+	BreakStmtNode  = "BreakStmtNode"
+	ProcLitNode    = "ProcLitExprNode"
+	CallExprNode   = "CallExprNode"
+	ReturnStmtNode = "ReturnStmtNode"
 )
 
 type Stmt interface {
@@ -93,6 +94,17 @@ type BreakStmt struct {
 
 func (bs *BreakStmt) StmtKind() NodeType {
 	return BreakStmtNode
+}
+
+// a ReturnStmt is just a BreakStmt, but insteak of evalLoopExpr catching it, evalProcExpr will catch it :)
+// copy-paste code ftw
+type ReturnStmt struct {
+	Kind  NodeType
+	Value Expr
+}
+
+func (rs *ReturnStmt) StmtKind() NodeType {
+	return ReturnStmtNode
 }
 
 type ExprStmt struct {
@@ -191,28 +203,28 @@ func (le *LoopExpr) ExprKind() NodeType {
 	return LoopExprNode
 }
 
-type ProcLitExpr struct {
+type ProcLit struct {
 	Kind   NodeType
 	Params []*Ident
 	Body   *BlockStmt
 }
 
-func (ple *ProcLitExpr) StmtKind() NodeType {
-	return ProcLitExprNode
+func (ple *ProcLit) StmtKind() NodeType {
+	return ProcLitNode
 }
 
-func (ple *ProcLitExpr) ExprKind() NodeType {
-	return ProcLitExprNode
+func (ple *ProcLit) ExprKind() NodeType {
+	return ProcLitNode
 }
 
-func (ple *ProcLitExpr) ProcExprKind() NodeType {
-	return ProcLitExprNode
+func (ple *ProcLit) ProcExprKind() NodeType {
+	return ProcLitNode
 }
 
 type CallExpr struct {
-	Kind   NodeType
-	Proc   ProcExpr // Either an Ident or a ProcLitExpr, since both can be called
-	Params []*Ident
+	Kind NodeType
+	Proc ProcExpr // Either an Ident or a ProcLit, since both can be called
+	Args []Expr
 }
 
 func (ce *CallExpr) StmtKind() NodeType {

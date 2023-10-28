@@ -62,7 +62,19 @@ func (p *Parser) parseBreakStmt() ast.Stmt {
 	return &ast.BreakStmt{Kind: ast.BreakStmtNode, Value: value}
 }
 
-func (p *Parser) parseStmt() ast.Stmt {
+func (p *Parser) parseReturnStmt() *ast.ReturnStmt {
+	p.eat()
+	fmt.Println(p.at())
+	if p.at().Type == token.SEMICOLON {
+		p.eat()
+		return &ast.ReturnStmt{Kind: ast.ReturnStmtNode, Value: nil}
+	}
+	var value = p.parseExpr()
+	p.expect(token.SEMICOLON, "")
+	return &ast.ReturnStmt{Kind: ast.ReturnStmtNode, Value: value}
+}
+
+func (p *Parser) parseStmt(expectSemicolon bool) ast.Stmt {
 	switch p.at().Type {
 	case token.LET, token.CONST:
 		return p.parseVarDeclStmt()
@@ -70,8 +82,10 @@ func (p *Parser) parseStmt() ast.Stmt {
 		return p.parsePrintStmt()
 	case token.BREAK:
 		return p.parseBreakStmt()
+	case token.RETURN:
+		return p.parseReturnStmt()
 	default:
-		return p.parseExprStmt(true)
+		return p.parseExprStmt(expectSemicolon)
 	}
 }
 

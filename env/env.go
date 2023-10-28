@@ -14,6 +14,10 @@ type Env struct {
 	Consts map[string]bool
 }
 
+func (env *Env) Idk() {
+	fmt.Println("fuck you Rob Pike")
+}
+
 func New(parentEnv *Env) *Env {
 	return &Env{Parent: parentEnv, Vars: make(map[string]object.Object), Consts: make(map[string]bool)}
 }

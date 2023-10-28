@@ -44,12 +44,23 @@ func evalPrintStmt(stmt *ast.PrintStmt, env *env.Env) object.Object {
 }
 
 func evalBreakStmt(stmt *ast.BreakStmt, e *env.Env) *object.BreakLitObject {
-	if LoopCount == 0 {
+	if cf.LoopCount == 0 {
 		log.Fatal("Error: break statement outside enclosing loop")
 	}
-	LoopCount--
+	cf.LoopCount--
 	if stmt.Value != nil {
 		return &object.BreakLitObject{Kind: object.Break, Value: Eval(stmt.Value, e)}
 	}
 	return &object.BreakLitObject{Kind: object.Break, Value: e.LookupVar("nil")}
+}
+
+func evalReturnStmt(stmt *ast.ReturnStmt, e *env.Env) *object.ReturnLitObject {
+	// if cf.ProcCount == 0 {
+	// 	log.Fatal("Error: return statement outside enclosing function literal")
+	// }
+	cf.ProcCount--
+	if stmt.Value != nil {
+		return &object.ReturnLitObject{Kind: object.Break, Value: Eval(stmt.Value, e)}
+	}
+	return &object.ReturnLitObject{Kind: object.Break, Value: e.LookupVar("nil")}
 }

@@ -72,7 +72,10 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 		return p.parseBlockExpr()
 	case token.PROC:
 		// this could either be just a proc literal or a proc IIFE
+		fmt.Println("inside this case thingy")
 		var procExpr = p.parseProcExpr()
+		fmt.Println("procExpr: ", procExpr)
+		fmt.Println(p.at())
 		if p.at().Type == token.LPAREN { // CallExpr
 			return p.parseCallExpr(procExpr)
 		}
@@ -139,26 +142,26 @@ func (p *Parser) parseBlockExpr() *ast.BlockStmt {
 	p.eat() // {
 	var body []ast.Stmt
 	for p.at().Type != token.RBRACE { // this is not the logic i want
-		body = append(body, p.parseBlockExprStmt())
+		body = append(body, p.parseStmt(false))
 	}
 	p.eat() // }
 	return &ast.BlockStmt{Kind: ast.BlockExprNode, Body: body}
 }
 
-func (p *Parser) parseProcExpr() *ast.ProcLitExpr {
+func (p *Parser) parseProcExpr() *ast.ProcLit {
 	p.eat()
 	p.expect(token.LPAREN, "")
 	var params = p.parseParams()
 	p.expect(token.RPAREN, "")
 	var body = p.parseBlockExpr()
-	return &ast.ProcLitExpr{Kind: ast.ProcLitExprNode, Params: params, Body: body}
+	return &ast.ProcLit{Kind: ast.ProcLitNode, Params: params, Body: body}
 }
 
 func (p *Parser) parseCallExpr(procExpr ast.ProcExpr) *ast.CallExpr {
 	p.eat() // (
-	var params = p.parseParams()
+	var args = p.parseArgs()
 	p.expect(token.RPAREN, "")
-	return &ast.CallExpr{Kind: ast.CallExprNode, Proc: procExpr, Params: params}
+	return &ast.CallExpr{Kind: ast.CallExprNode, Proc: procExpr, Args: args}
 }
 
 func (p *Parser) parseParams() []*ast.Ident {
@@ -175,6 +178,21 @@ func (p *Parser) parseParams() []*ast.Ident {
 	return params
 }
 
+func (p *Parser) parseArgs() []ast.Expr {
+	var args = []ast.Expr{}
+	if p.at().Type == token.RPAREN {
+		return args
+	}
+	args = append(args, p.parseExpr())
+	fmt.Println("inside parseArgs")
+
+	for p.at().Type == token.COMMA {
+		p.eat()
+		args = append(args, p.parseExpr())
+	}
+	return args
+}
+
 func (p *Parser) parseIdent() *ast.Ident {
 	return &ast.Ident{Kind: ast.IdentNode, Symbol: p.eat().Literal}
 }
@@ -188,6 +206,8 @@ func (p *Parser) parseBlockExprStmt() ast.Stmt {
 		return p.parsePrintStmt()
 	case token.BREAK:
 		return p.parseBreakStmt()
+	case token.RETURN:
+		return p.parseReturnStmt()
 	default:
 		return p.parseExprStmt(false)
 	}
