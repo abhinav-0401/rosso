@@ -30,7 +30,7 @@ func evalVarDecl(decl *ast.VarDecl, env *env.Env) object.Object {
 
 func evalExprStmt(node *ast.ExprStmt, env *env.Env) object.Object {
 	var value = Eval(node.Node, env)
-	if value.Type() == object.Break {
+	if value.Type() == object.Break || value.Type() == object.Return {
 		return value
 	}
 	return env.LookupVar("nil") // ExprStmt always return nil
@@ -58,7 +58,7 @@ func evalReturnStmt(stmt *ast.ReturnStmt, e *env.Env) *object.ReturnLitObject {
 	// }
 	cf.ProcCount--
 	if stmt.Value != nil {
-		return &object.ReturnLitObject{Kind: object.Break, Value: Eval(stmt.Value, e)}
+		return &object.ReturnLitObject{Kind: object.Return, Value: Eval(stmt.Value, e)}
 	}
-	return &object.ReturnLitObject{Kind: object.Break, Value: e.LookupVar("nil")}
+	return &object.ReturnLitObject{Kind: object.Return, Value: e.LookupVar("nil")}
 }

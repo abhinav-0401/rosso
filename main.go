@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -41,6 +42,9 @@ func main() {
 
 	var parser = parser.New()
 	var ast = parser.ProduceAst(src)
+	astPretty, _ := json.MarshalIndent(ast, "", "    ")
+	fmt.Printf("%+v\n", string(astPretty))
+
 	var e = env.New(nil)
 	e.DeclareVar("PI", &object.NumLitObject{Kind: object.Int, Value: 4}, true)
 	e.DeclareVar("true", &object.BoolLitObject{Kind: object.Bool, Value: true}, true)

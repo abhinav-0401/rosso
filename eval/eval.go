@@ -51,6 +51,7 @@ func Eval(astNode ast.Stmt, env *env.Env) object.Object {
 		// return evalBreakStmt(node, env)
 	case *ast.ReturnStmt:
 		log.Fatal("Error: return statement outside enclosing function literal")
+		// return evalReturnStmt(node, env)
 	default:
 		fmt.Printf("This AST Node has not yet been set up for evaluation\n")
 		os.Exit(1)

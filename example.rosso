@@ -1,0 +1,48 @@
+let x = 5;
+print x;
+
+let add = proc(a, b) { a + b };
+
+print add(3, 4);
+
+let op = proc(x, y) {
+    if x > y {
+        x + y
+    } else if x == y { 
+        x - y
+    } else {
+        x * y
+    }
+};
+
+print op(10, 20);
+
+let func = proc() {
+    let a = 10;
+
+    let addTen = proc(b) {
+        return a + b;        
+    };
+
+    return addTen;
+};
+
+let addTen = func();
+print addTen(5);
+
+let recurse = proc(num) {
+    if num == 0 { return; }
+
+    print num;
+    recurse(num - 1);
+};
+
+let recursiveAdd = proc(num) {
+    if num == 0 { return 0; }
+
+    return num + recursiveAdd(num - 1);
+};
+
+print recurse(5);
+
+print recursiveAdd(10);

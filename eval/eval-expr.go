@@ -112,6 +112,10 @@ func evalBlockStmt(block *ast.BlockStmt, e *env.Env) object.Object {
 			breakStmt, _ := stmt.(*ast.BreakStmt)
 			return evalBreakStmt(breakStmt, newEnv)
 		}
+		if stmt.StmtKind() == ast.ReturnStmtNode {
+			returnStmt, _ := stmt.(*ast.ReturnStmt)
+			return evalReturnStmt(returnStmt, newEnv)
+		}
 		lastEvaluated = Eval(stmt, newEnv)
 	}
 

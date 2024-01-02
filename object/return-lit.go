@@ -14,5 +14,5 @@ func (rlo *ReturnLitObject) Type() ObjectType {
 }
 
 func (rlo *ReturnLitObject) Debug() {
-	fmt.Printf(" {Kind: BreakLitObject, Value: %v}\n", rlo.Value)
+	fmt.Printf(" {Kind: ReturnLitObject, Value: %v}\n", rlo.Value)
 }
