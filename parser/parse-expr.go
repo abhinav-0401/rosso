@@ -72,16 +72,13 @@ func (p *Parser) parsePrimaryExpr() ast.Expr {
 		return p.parseBlockExpr()
 	case token.PROC:
 		// this could either be just a proc literal or a proc IIFE
-		fmt.Println("inside this case thingy")
 		var procExpr = p.parseProcExpr()
-		fmt.Println("procExpr: ", procExpr)
-		fmt.Println(p.at())
 		if p.at().Type == token.LPAREN { // CallExpr
 			return p.parseCallExpr(procExpr)
 		}
 		return procExpr
 	default:
-		fmt.Print("eof? ")
+		fmt.Print("eof?\n")
 		os.Exit(1)
 	}
 
@@ -184,7 +181,6 @@ func (p *Parser) parseArgs() []ast.Expr {
 		return args
 	}
 	args = append(args, p.parseExpr())
-	fmt.Println("inside parseArgs")
 
 	for p.at().Type == token.COMMA {
 		p.eat()

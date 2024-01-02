@@ -25,7 +25,7 @@ func (p *Parser) ProduceAst(src string) *ast.Program {
 
 	lex := lexer.New(src)
 	p.Tokens = lex.Tokenise()
-	fmt.Printf("tokens in the parser: %v\n", p.Tokens)
+	// fmt.Printf("tokens in the parser: %v\n", p.Tokens)
 
 	// parse until you hit the EOF token
 	for p.notEof() {

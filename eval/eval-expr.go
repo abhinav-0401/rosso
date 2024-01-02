@@ -107,7 +107,6 @@ func evalBlockStmt(block *ast.BlockStmt, e *env.Env) object.Object {
 	newEnv := &env.Env{Parent: e, Vars: make(map[string]object.Object), Consts: make(map[string]bool)}
 
 	for _, stmt := range block.Body {
-		fmt.Println(stmt.StmtKind())
 		if stmt.StmtKind() == ast.BreakStmtNode {
 			fmt.Println("this is a break statement")
 			breakStmt, _ := stmt.(*ast.BreakStmt)

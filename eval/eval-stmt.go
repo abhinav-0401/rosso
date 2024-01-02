@@ -1,7 +1,6 @@
 package eval
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/abhinav-0401/rosso/ast"
@@ -25,7 +24,6 @@ func evalVarDecl(decl *ast.VarDecl, env *env.Env) object.Object {
 
 	}
 	var declValue = Eval(decl.Value, env)
-	fmt.Println("inside var decl")
 	env.DeclareVar(decl.Symbol, declValue, decl.IsConstant)
 	return env.LookupVar("nil")
 }

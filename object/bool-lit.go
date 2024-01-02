@@ -14,5 +14,5 @@ func (blo *BoolLitObject) Type() ObjectType {
 }
 
 func (blo *BoolLitObject) Debug() {
-	fmt.Printf(" {Kind: Boolean, Value: %v}\n", blo.Value)
+	fmt.Printf("{Kind: Boolean, Value: %v}\n", blo.Value)
 }

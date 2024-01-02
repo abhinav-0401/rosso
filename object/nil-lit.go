@@ -14,5 +14,5 @@ func (nlo *NilLitObject) Type() ObjectType {
 }
 
 func (nlo *NilLitObject) Debug() {
-	fmt.Printf(" {Kind: Nil, Value: %v}\n", nlo.Value)
+	fmt.Printf("{Kind: Nil, Value: %v}\n", nlo.Value)
 }

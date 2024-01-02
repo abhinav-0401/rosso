@@ -23,5 +23,5 @@ func (nlo *ProcLitObject) Type() ObjectType {
 }
 
 func (nlo *ProcLitObject) Debug() {
-	fmt.Printf(" {Kind: Nil, Value:}\n")
+	fmt.Printf("{Kind: Nil, Value:}\n")
 }

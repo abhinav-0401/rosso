@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/abhinav-0401/rosso/ast"
@@ -52,7 +51,6 @@ func (p *Parser) parsePrintStmt() ast.Stmt {
 
 func (p *Parser) parseBreakStmt() ast.Stmt {
 	p.eat()
-	fmt.Println(p.at())
 	if p.at().Type == token.SEMICOLON {
 		p.eat()
 		return &ast.BreakStmt{Kind: ast.BreakStmtNode, Value: nil}
@@ -64,7 +62,6 @@ func (p *Parser) parseBreakStmt() ast.Stmt {
 
 func (p *Parser) parseReturnStmt() *ast.ReturnStmt {
 	p.eat()
-	fmt.Println(p.at())
 	if p.at().Type == token.SEMICOLON {
 		p.eat()
 		return &ast.ReturnStmt{Kind: ast.ReturnStmtNode, Value: nil}
